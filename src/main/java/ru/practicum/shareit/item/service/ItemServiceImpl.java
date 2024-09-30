@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dao.UserStorage;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
