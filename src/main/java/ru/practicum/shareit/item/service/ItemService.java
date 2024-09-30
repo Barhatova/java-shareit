@@ -10,6 +10,7 @@ public interface ItemService {
     ItemDto updateItem(Integer userId, Integer itemId, NewItemRequest newItemRequest);
 
     void deleteItem(Integer itemId);
+
     Collection<ItemDto> getByText(String text);
 
     ItemDto getItemById(Integer itemId);
