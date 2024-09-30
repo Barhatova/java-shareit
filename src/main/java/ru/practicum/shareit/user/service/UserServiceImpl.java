@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(Integer userId, User user) {
+    public UserDto updateUser(int userId, User user) {
         User oldUser = getUser(userId);
         if (user.getEmail() != null) {
             validateEmail(user);
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Integer userId) {
+    public void deleteUser(int userId) {
         userStorage.deleteUser(userId);
     }
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Integer userId) {
+    public UserDto getUserById(int userId) {
         return UserMapper.mapToDto(getUser(userId));
     }
 
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
                 });
     }
 
-    private User getUser(Integer userId) {
+    private User getUser(int userId) {
         return userStorage.getUserById(userId)
                 .orElseThrow(() -> {
                     log.warn("Пользователь с id {} не найден", userId);

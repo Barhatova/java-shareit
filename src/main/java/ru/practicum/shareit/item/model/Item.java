@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
-    Integer id;
+    int id;
     Integer ownerId;
     String name;
     String description;

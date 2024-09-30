@@ -23,7 +23,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
 
     @Override
-    public ItemDto createItem(Integer userId, NewItemRequest newItemRequest) {
+    public ItemDto createItem(int userId, NewItemRequest newItemRequest) {
         getUser(userId);
         validateItem(newItemRequest);
         Item item = ItemMapper.mapToItem(newItemRequest);
@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(Integer userId, Integer itemId, NewItemRequest newItemRequest) {
+    public ItemDto updateItem(int userId, int itemId, NewItemRequest newItemRequest) {
         Item oldItem = checkItemOwner(userId, itemId);
         if (newItemRequest.hasName()) {
             oldItem.setName(newItemRequest.getName());
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void deleteItem(Integer itemId) {
+    public void deleteItem(int itemId) {
         itemStorage.deleteItem(itemId);
     }
 
@@ -62,19 +62,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto getItemById(Integer itemId) {
+    public ItemDto getItemById(int itemId) {
         return ItemMapper.mapToDto(getItem(itemId));
     }
 
     @Override
-    public Collection<ItemDto> getOwnerItems(Integer ownerId) {
+    public Collection<ItemDto> getOwnerItems(int ownerId) {
         getUser(ownerId);
         return itemStorage.getOwnerItems(ownerId).stream()
                 .map(ItemMapper::mapToDto)
                 .toList();
     }
 
-    private void getUser(Integer userId) {
+    private void getUser(int userId) {
         userStorage.getUserById(userId)
                 .orElseThrow(() -> {
                     log.warn("Пользователь с id не найден {}", userId);
@@ -82,15 +82,14 @@ public class ItemServiceImpl implements ItemService {
                 });
     }
 
-    private Item checkItemOwner(Integer userId, Integer itemId) {
+    private Item checkItemOwner(int userId, int itemId) {
         getUser(userId);
-        Item item = getItem(itemId);
-        if (item.getOwnerId() != userId) {
+        if (getItem(itemId).getOwnerId() != userId) {
             log.warn("Пользователь {} не имеет вещь {}", userId, itemId);
             throw new NotFoundException(
                     String.format("Пользователь не имеет вещь", userId, itemId));
         }
-        return item;
+        return getItem(itemId);
     }
 
     private void validateItem(NewItemRequest item) {
@@ -108,7 +107,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private Item getItem(Integer itemId) {
+    private Item getItem(int itemId) {
         return itemStorage.getItemById(itemId)
                 .orElseThrow(() -> {
                     log.warn("Вещь по идентификатору {} не найдена", itemId);

@@ -10,9 +10,9 @@ public interface UserStorage {
 
     User updateUser(User user);
 
-    void deleteUser(Integer userId);
+    void deleteUser(int userId);
 
     Collection<User> getAllUser();
 
-    Optional<User> getUserById(Integer userId);
+    Optional<User> getUserById(int userId);
 }

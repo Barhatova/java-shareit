@@ -19,30 +19,30 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
+    public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") int userId,
                               @RequestBody NewItemRequest item) {
         return itemService.createItem(userId, item);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                              @PathVariable Integer itemId,
+    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") int userId,
+                              @PathVariable int itemId,
                               @RequestBody NewItemRequest item) {
         return itemService.updateItem(userId, itemId, item);
     }
 
     @DeleteMapping("/{itemId}")
-    public void deleteItem(@PathVariable Integer itemId) {
+    public void deleteItem(@PathVariable int itemId) {
         itemService.deleteItem(itemId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Integer itemId) {
+    public ItemDto getItemById(@PathVariable int itemId) {
         return itemService.getItemById(itemId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getOwnerItems(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public Collection<ItemDto> getOwnerItems(@RequestHeader("X-Sharer-User-Id") int userId) {
         return itemService.getOwnerItems(userId);
     }
 

@@ -30,7 +30,7 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public void deleteUser(Integer userId) {
+    public void deleteUser(int userId) {
         users.remove(userId);
     }
 
@@ -40,7 +40,7 @@ public class UserStorageImpl implements UserStorage {
     }
 
     @Override
-    public Optional<User> getUserById(Integer userId) {
+    public Optional<User> getUserById(int userId) {
         if (users.containsKey(userId)) {
             return Optional.of(users.get(userId));
         }

@@ -10,11 +10,11 @@ public interface ItemStorage {
 
     Item updateItem(Item item);
 
-    void deleteItem(Integer itemId);
+    void deleteItem(int itemId);
 
     Collection<Item> getByText(String text);
 
-    Optional<Item> getItemById(Integer itemId);
+    Optional<Item> getItemById(int itemId);
 
-    Collection<Item> getOwnerItems(Integer ownerId);
+    Collection<Item> getOwnerItems(int ownerId);
 }

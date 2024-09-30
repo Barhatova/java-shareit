@@ -30,7 +30,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public void deleteItem(Integer itemId) {
+    public void deleteItem(int itemId) {
         items.remove(itemId);
     }
 
@@ -45,7 +45,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Optional<Item> getItemById(Integer itemId) {
+    public Optional<Item> getItemById(int itemId) {
         if (items.containsKey(itemId)) {
             return Optional.of(items.get(itemId));
         }
@@ -53,7 +53,7 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public Collection<Item> getOwnerItems(Integer ownerId) {
+    public Collection<Item> getOwnerItems(int ownerId) {
         return items.values().stream()
                 .filter(item -> item.getOwnerId() == ownerId)
                 .toList();

@@ -9,11 +9,11 @@ import java.util.Collection;
 public interface UserService {
     UserDto createUser(NewUserRequest newUserRequest);
 
-    UserDto updateUser(Integer userId, User user);
+    UserDto updateUser(int userId, User user);
 
-    void deleteUser(Integer userId);
+    void deleteUser(int userId);
 
     Collection<UserDto> getAllUser();
 
-    UserDto getUserById(Integer userId);
+    UserDto getUserById(int userId);
 }

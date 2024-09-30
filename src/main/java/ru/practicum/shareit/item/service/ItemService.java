@@ -6,15 +6,15 @@ import ru.practicum.shareit.item.dto.NewItemRequest;
 import java.util.Collection;
 
 public interface ItemService {
-    ItemDto createItem(Integer userId, NewItemRequest newItemRequest);
+    ItemDto createItem(int userId, NewItemRequest newItemRequest);
 
-    ItemDto updateItem(Integer userId, Integer itemId, NewItemRequest newItemRequest);
+    ItemDto updateItem(int userId, int itemId, NewItemRequest newItemRequest);
 
-    void deleteItem(Integer itemId);
+    void deleteItem(int itemId);
 
     Collection<ItemDto> getByText(String text);
 
-    ItemDto getItemById(Integer itemId);
+    ItemDto getItemById(int itemId);
 
-    Collection<ItemDto> getOwnerItems(Integer ownerId);
+    Collection<ItemDto> getOwnerItems(int ownerId);
 }
