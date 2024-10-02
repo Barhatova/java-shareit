@@ -1,8 +1,10 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.NewItemRequest;
@@ -11,6 +13,7 @@ import ru.practicum.shareit.item.service.ItemService;
 import java.util.Collection;
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
@@ -20,14 +23,14 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") int userId,
-                              @RequestBody NewItemRequest item) {
+                              @RequestBody @Valid NewItemRequest item) {
         return itemService.createItem(userId, item);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") int userId,
                               @PathVariable int itemId,
-                              @RequestBody NewItemRequest item) {
+                              @RequestBody @Valid NewItemRequest item) {
         return itemService.updateItem(userId, itemId, item);
     }
 
@@ -47,7 +50,7 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> itemSearch(@RequestParam String text) {
+    public Collection<ItemDto> itemSearch(@RequestParam(defaultValue = "") String text) {
         return itemService.getByText(text);
     }
 }

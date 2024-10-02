@@ -58,8 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateEmail(User user) {
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@") ||
-                !(user.getEmail().matches("^(.+)@(\\S+)$"))) {
+        if (!user.getEmail().contains("@") || !(user.getEmail().matches("^(.+)@(\\S+)$"))) {
             log.warn("Email пользователя введен некорректно {}", user);
             throw new ValidationException("Email пользователя введен некорректно");
         }

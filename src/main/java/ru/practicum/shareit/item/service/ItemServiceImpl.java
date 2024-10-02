@@ -93,10 +93,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validateItem(NewItemRequest item) {
-        if (item.getName() == null || item.getName().isBlank()) {
-            log.warn("Наименование вещи некорректно {}", item);
-            throw new ValidationException("Наименование вещи некорректно");
-        }
         if (item.getDescription() == null) {
             log.warn("Описание вещи некорректно {}", item);
             throw new ValidationException("Описание вещи некорректно");
