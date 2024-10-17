@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -36,7 +37,8 @@ public class BookingServiceImpl implements BookingService {
         User booker = userService.getUserById(bookerId);
         Item item = itemService.getItemById(bookingRequest.getItemId());
         User owner = userService.getUserById(item.getOwnerId());
-        if (owner.getId() == bookerId) {
+        //if (owner.getId() == bookerId) {
+        if (Objects.equals(owner.getId(), bookerId)) {
             throw new BookingException("Пользователь не может арендовать собственную вещь");
         }
         if (item.getAvailable()) {

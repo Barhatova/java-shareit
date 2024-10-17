@@ -47,7 +47,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(Integer userId, Integer itemId, NewItemRequest item) {
         Item updatedItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("У пользователя нет вещи"));
-        if (updatedItem.getOwnerId() != userId) {
+       // if (updatedItem.getOwnerId() != userId) {
+        if (!Objects.equals(updatedItem.getOwnerId(), userId)) {
             throw new NotFoundException("У пользователя нет вещи");
         }
         ItemMapper.updateItemFields(updatedItem, item);
@@ -97,7 +98,8 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещи с id {} " + itemId + "не существует"));
         ItemDto result = ItemMapper.itemMapToDto(item);
-        if (item.getOwnerId() == userId) {
+       // if (item.getOwnerId() == userId) {
+        if (Objects.equals(item.getOwnerId(), userId)) {
             updateBookings(result);
         }
         List<Comment> comments = commentRepository.getAllByItemId(result.getId());
