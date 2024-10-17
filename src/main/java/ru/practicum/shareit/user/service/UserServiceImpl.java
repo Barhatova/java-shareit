@@ -3,79 +3,69 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.DuplicateParameterException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.user.dao.UserStorage;
 import ru.practicum.shareit.user.dto.NewUserRequest;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
-
-import java.util.Collection;
+import ru.practicum.shareit.user.repository.UserRepository;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserStorage userStorage;
+    private final UserRepository userRepository;
 
     @Override
-    public UserDto createUser(NewUserRequest newUserRequest) {
-        User user = UserMapper.mapToUser(newUserRequest);
-        validateEmail(user);
-        return UserMapper.mapToDto(userStorage.createUser(user));
+    public User createUser(User user) {
+        userValidation(user);
+        userRepository.save(user);
+        return user;
     }
 
     @Override
-    public UserDto updateUser(int userId, User user) {
-        User oldUser = getUser(userId);
-        if (user.getEmail() != null) {
-            validateEmail(user);
-            oldUser.setEmail(user.getEmail());
+    public User updateUser(Integer userId, NewUserRequest request) {
+        User updatedUser = getUserById(userId);
+        if (request.getEmail() != null) {
+            updatedUser.setEmail(request.getEmail());
         }
-        if (user.getName() != null) {
-            oldUser.setName(user.getName());
+        UserMapper.updateUserFields(updatedUser, request);
+        return userRepository.save(updatedUser);
+    }
+
+    @Override
+    public void deleteUserById(Integer userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public List<User> getAllUser() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User getUserById(Integer userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Пользователя с таким id не существует");
         }
-        return UserMapper.mapToDto(userStorage.updateUser(oldUser));
+        return user.get();
     }
 
-    @Override
-    public void deleteUser(int userId) {
-        userStorage.deleteUser(userId);
-    }
-
-    @Override
-    public Collection<UserDto> getAllUser() {
-        return userStorage.getAllUser().stream()
-                .map(UserMapper::mapToDto)
-                .toList();
-    }
-
-    @Override
-    public UserDto getUserById(int userId) {
-        return UserMapper.mapToDto(getUser(userId));
-    }
-
-    private void validateEmail(User user) {
-        if (!user.getEmail().contains("@") || !(user.getEmail().matches("^(.+)@(\\S+)$"))) {
-            log.warn("Email пользователя введен некорректно {}", user);
-            throw new ValidationException("Email пользователя введен некорректно");
+    private void userValidation(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            log.warn("Имя пользователя не задано");
+            throw new ValidationException("Имя пользователя не задано");
         }
-        userStorage.getAllUser().stream()
-                .filter(user1 -> user1.getEmail().equals(user.getEmail()))
-                .findFirst()
-                .ifPresent(user1 -> {
-                    log.warn("Email уже есть у пользователя {}", user);
-                    throw new DuplicateParameterException("Email уже есть");
-                });
-    }
-
-    private User getUser(int userId) {
-        return userStorage.getUserById(userId)
-                .orElseThrow(() -> {
-                    log.warn("Пользователь с id {} не найден", userId);
-                    return new NotFoundException(String.format("Пользователь с id не найден {}", userId));
-                });
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            log.warn("Не указана электронная почта пользователя");
+            throw new ValidationException("Не указана электронная почта пользователя");
+        }
+        if (!user.getEmail().contains("@")) {
+            log.warn("Электронная почта не содержит символ - @: {} ", user.getEmail());
+            throw new ValidationException("Электронная почта не содержит символ - @");
+        }
     }
 }
