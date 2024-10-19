@@ -37,7 +37,6 @@ public class BookingServiceImpl implements BookingService {
         User booker = userService.getUserById(bookerId);
         Item item = itemService.getItemById(bookingRequest.getItemId());
         User owner = userService.getUserById(item.getOwnerId());
-        //if (owner.getId() == bookerId) {
         if (Objects.equals(owner.getId(), bookerId)) {
             throw new BookingException("Пользователь не может арендовать собственную вещь");
         }
