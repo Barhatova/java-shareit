@@ -1,24 +1,27 @@
 package ru.practicum.shareit.item.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import ru.practicum.shareit.booking.dto.ShortItemBooking;
+
+import java.util.List;
 
 @Getter
 @Setter
 @ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
     @Null
-    int id;
+    Integer id;
     @NotBlank
     @NotNull
     @Size(min = 1)
@@ -26,5 +29,9 @@ public class ItemDto {
     @NotNull
     String description;
     @NotNull
-    boolean available;
+    Boolean available;
+    ShortItemBooking lastBooking;
+    ShortItemBooking nextBooking;
+    List<CommentDto> comments;
+    Integer requestId;
 }

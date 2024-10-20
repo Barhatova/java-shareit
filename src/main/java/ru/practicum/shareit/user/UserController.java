@@ -1,20 +1,16 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.NewUserRequest;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
@@ -23,27 +19,34 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@RequestBody @Valid NewUserRequest newUserRequest) {
-        return userService.createUser(newUserRequest);
+    public User createUser(@RequestBody User user) {
+        if (user == null) {
+            throw new NotFoundException("Не указан пользователь для добавления");
+        }
+        return userService.createUser(user);
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable @Valid int userId, @RequestBody User user) {
-        return userService.updateUser(userId, user);
+    @ResponseStatus(HttpStatus.OK)
+    public User updateUser(@PathVariable Integer userId, @RequestBody NewUserRequest request) {
+        if (request == null) {
+            throw new NotFoundException("Не указан пользователь для обновления");
+        }
+        return userService.updateUser(userId, request);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable int userId) {
-        userService.deleteUser(userId);
+    public void deleteUserById(@PathVariable Integer userId) {
+        userService.deleteUserById(userId);
     }
 
     @GetMapping
-    public Collection<UserDto> getAllUser() {
+    public List<User> getAllUser() {
         return userService.getAllUser();
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable int userId) {
+    public User getUserById(@PathVariable Integer userId) {
         return userService.getUserById(userId);
     }
 }
