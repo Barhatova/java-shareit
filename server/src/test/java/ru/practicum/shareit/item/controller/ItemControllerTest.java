@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,7 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.NewItemRequest;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -24,13 +22,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
@@ -38,7 +36,7 @@ public class ItemControllerTest {
     @Autowired
     ObjectMapper objectMapper;
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
     @Autowired
     MockMvc mockMvc;
 
@@ -61,20 +59,20 @@ public class ItemControllerTest {
 
         owner = User.builder()
                 .id(1)
-                .name("name 1")
+                .name("name")
                 .email("mail@mall.ru")
                 .build();
 
         booker = User.builder()
                 .id(101)
-                .name("name 2")
-                .email("booker@email.ru")
+                .name("name ")
+                .email("booker@mail.ru")
                 .build();
 
         item = Item.builder()
                 .id(1)
-                .name("name")
-                .description("desc")
+                .name("Item №1")
+                .description("Desc №1")
                 .available(true)
                 .itemRequest(itemRequest)
                 .ownerId(owner.getId())
@@ -123,13 +121,16 @@ public class ItemControllerTest {
     void testSearchItemsByText() {
         when(itemService.getByText("found one item"))
                 .thenReturn(List.of(itemDto));
+
         mockMvc.perform(get("/items/search")
                         .param("text", "found one item")
                         .header("X-Sharer-User-Id", "1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(itemDto))));
+
         when(itemService.getByText("items not found"))
                 .thenReturn(List.of());
+
         mockMvc.perform(get("/items/search")
                         .param("text", "items not found")
                         .header("X-Sharer-User-Id", "1"))
@@ -137,11 +138,12 @@ public class ItemControllerTest {
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of())));
     }
 
-   /* @SneakyThrows
+    @SneakyThrows
     @Test
-    void testCreate() {
-        when(itemService.createItem(anyInt(), ArgumentMatchers.<NewItemRequest>any()))
+    void testAdd() {
+        when(itemService.createItem(anyInt(), any()))
                 .thenReturn(itemDto);
+
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -151,13 +153,14 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(item.getDescription()), String.class))
                 .andExpect(jsonPath("$.requestId", is(itemRequest.getId()), Integer.class))
                 .andExpect(jsonPath("$.name", is(item.getName()), String.class));
-    }*/
+    }
 
     @SneakyThrows
     @Test
     void testUpdate_whenAllAreOk_aAndReturnUpdatedItem() {
-        when(itemService.updateItem(anyInt(), anyInt(), ArgumentMatchers.<NewItemRequest>any()))
+        when(itemService.updateItem(anyInt(), anyInt(), any()))
                 .thenReturn(itemDto);
+
         mockMvc.perform(patch("/items/{itemId}", itemDto.getId())
                         .header("X-Sharer-User-Id", "1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -172,12 +175,14 @@ public class ItemControllerTest {
     @SneakyThrows
     @Test
     void testUpdate_whenAllAreNotOk_aAndReturnExceptionNotFoundRecordInBD() {
-        when(itemService.updateItem(anyInt(), anyInt(), ArgumentMatchers.<NewItemRequest>any()))
+        when(itemService.updateItem(anyInt(), anyInt(), any()))
                 .thenThrow(NotFoundException.class);
+
         mockMvc.perform(patch("/items/{itemId}", item.getId())
                         .header("X-Sharer-User-Id", "1")
                         .content(objectMapper.writeValueAsString(item))
                         .contentType(MediaType.APPLICATION_JSON))
+
                 .andExpect(status().isNotFound());
     }
 
@@ -189,7 +194,7 @@ public class ItemControllerTest {
                 .text("comment 1")
                 .authorName("name user")
                 .created(LocalDateTime.now().minusSeconds(5)).build();
-        when(itemService.addComment(anyInt(), anyInt(), ArgumentMatchers.<CommentDto>any())).thenReturn(commentDto);
+        when(itemService.addComment(any(), any(), any())).thenReturn(commentDto);
 
         mockMvc.perform(post("/items/{itemId}/comment", item.getId())
                         .header("X-Sharer-User-Id", "1")

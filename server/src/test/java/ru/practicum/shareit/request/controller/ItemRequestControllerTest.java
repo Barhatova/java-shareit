@@ -163,7 +163,7 @@ class ItemRequestControllerTest {
                 .created(now)
                 .build();
 
-        when(itemRequestService.getAllRequests(anyInt()))
+        when(itemRequestService.getRequests(anyInt()))
                 .thenReturn(List.of(itemRequestDtoWithAnswers));
 
         mockMvc.perform(get("/requests/all")
@@ -172,7 +172,7 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(List.of(itemRequestDtoWithAnswers))));
-        verify(itemRequestService, times(1)).getAllRequests(anyInt());
+        verify(itemRequestService, times(1)).getRequests(anyInt());
     }
 
     @SneakyThrows
@@ -185,7 +185,7 @@ class ItemRequestControllerTest {
                 .created(now)
                 .build();
 
-        when(itemRequestService.getRequestById(anyInt(), anyInt()))
+        when(itemRequestService.getById(anyInt(), anyInt()))
                 .thenReturn(itemRequestDtoWithAnswers);
 
         mockMvc.perform(get("/requests/{requestId}", itemRequestDtoWithAnswers.getId())
@@ -194,6 +194,6 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(itemRequestDtoWithAnswers)));
-        verify(itemRequestService, times(1)).getRequestById(anyInt(), anyInt());
+        verify(itemRequestService, times(1)).getById(anyInt(), anyInt());
     }
 }

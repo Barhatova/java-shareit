@@ -28,7 +28,7 @@ public class ItemRequestClient extends BaseClient {
         return post("", userId, itemRequestDto);
     }
 
-    public ResponseEntity<Object> getRequestById(Integer userId, Integer requestId) {
+    public ResponseEntity<Object> getById(Integer userId, Integer requestId) {
         return get("/" + userId, requestId);
     }
 

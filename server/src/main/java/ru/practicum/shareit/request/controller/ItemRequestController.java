@@ -22,14 +22,14 @@ public class ItemRequestController {
     }
 
     @GetMapping("{requestId}")
-    public ItemRequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                         @PathVariable Integer requestId) {
-        return requestService.getRequestById(userId, requestId);
+    public ItemRequestDto getById(@RequestHeader("X-Sharer-User-Id") Integer userId,
+                                  @PathVariable Integer requestId) {
+        return requestService.getById(userId, requestId);
     }
 
     @GetMapping("/all")
-    public Collection<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return requestService.getAllRequests(userId);
+    public Collection<ItemRequestDto> getRequests(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+        return requestService.getRequests(userId);
     }
 
     @GetMapping

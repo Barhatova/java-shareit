@@ -33,7 +33,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public ItemRequestDto getRequestById(Integer userId, Integer requestId) {
+    public ItemRequestDto getById(Integer userId, Integer requestId) {
         ItemRequest itemRequest = itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Запрос на аренду с id {}" + requestId + " не найден"));
         itemRequest.setItems(itemRepository.getAllByItemRequest(itemRequest));
@@ -43,7 +43,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public Collection<ItemRequestDto> getAllRequests(Integer userId) {
+    public Collection<ItemRequestDto> getRequests(Integer userId) {
         userService.getUserById(userId);
         Collection<ItemRequestDto> list = new ArrayList<>();
         Collection<ItemRequest> getAllByRequesterIdIsNot = itemRequestRepository.getByCreatorIdIsNot(userId);
