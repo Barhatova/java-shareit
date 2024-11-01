@@ -18,7 +18,7 @@ class CommentDtoTest {
     final JacksonTester<CommentDto> json;
 
     @Test
-    void testSerialize() throws Exception {
+    void test_serialize() throws Exception {
         CommentDto commentDto = CommentDto.builder()
                 .id(1)
                 .created(LocalDateTime.now())

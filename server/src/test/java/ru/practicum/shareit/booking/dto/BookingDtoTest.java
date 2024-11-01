@@ -18,18 +18,18 @@ public class BookingDtoTest {
     private JacksonTester<BookingDto> json;
 
     @Test
-    void testSerialize() throws Exception {
+    void test_Serialize() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1)
                 .name("name")
-                .email("name@mail.com")
+                .email("name@yandex.ru")
                 .build();
         ItemDto itemDto = ItemDto.builder()
                 .id(1)
                 .requestId(1)
                 .available(true)
-                .description("Описание предмета")
-                .name("Предмет")
+                .description("desc")
+                .name("name1")
                 .build();
         BookingDto bookingDto = BookingDto.builder()
                 .id(1)

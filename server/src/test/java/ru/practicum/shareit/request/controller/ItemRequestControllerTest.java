@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,9 +49,9 @@ class ItemRequestControllerTest {
     ItemRequestDto itemRequestDto;
     BookingDto bookingDtoForCreate;
     User owner1;
-    User booker101;
-    User requester51;
-    Item item1;
+    User booker1;
+    User request;
+    Item item;
     ItemDto itemDto;
     LocalDateTime now;
     LocalDateTime nowPlus10Hours;
@@ -70,19 +69,19 @@ class ItemRequestControllerTest {
                 .email("owner1@m.ri")
                 .build();
 
-        booker101 = User.builder()
+        booker1 = User.builder()
                 .id(101)
                 .name("imya usera 101 booker")
                 .email("booker@pochta.tu")
                 .build();
 
-        requester51 = User.builder()
+        request = User.builder()
                 .id(51)
                 .name("name requester")
                 .email("requester@yaschik.po")
                 .build();
 
-        item1 = Item.builder()
+        item = Item.builder()
                 .id(1)
                 .name("nazvanie veschi 1")
                 .description("opisanie veschi 1")
@@ -90,27 +89,27 @@ class ItemRequestControllerTest {
                 .available(true)
                 .itemRequest(itemRequest)
                 .build();
-        itemDto = ItemMapper.itemMapToDto(item1);
+        itemDto = ItemMapper.itemMapToDto(item);
 
         itemRequest = ItemRequest.builder()
                 .id(1)
                 .description("Book")
-                .creator(requester51)
+                .creator(request)
                 .created(now)
-                .items(List.of(item1))
+                .items(List.of(item))
                 .build();
 
         itemRequestDto = ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
-                .requester(UserMapper.userMapToDto(requester51))
+                .requestor(UserMapper.userMapToDto(request))
                 .build();
 
         bookingDtoForCreate = BookingDto.builder()
                 .id(1)
                 .item(itemDto)
-                .booker(UserMapper.userMapToDto(booker101))
+                .booker(UserMapper.userMapToDto(booker1))
                 .start(nowPlus10Hours)
                 .end(nowPlus20Hours)
                 .status(BookingStatus.WAITING)
@@ -119,8 +118,8 @@ class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void createRequest() {
-        when(itemRequestService.createRequest(anyInt(), ArgumentMatchers.<ItemRequestDto>any()))
+    void test_createRequest() {
+        when(itemRequestService.createItemRequest(anyInt(), any()))
                 .thenReturn(itemRequestDto);
 
         mockMvc.perform(post("/requests")
@@ -135,7 +134,7 @@ class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void getItemRequestsByUserId() {
+    void test_getItemRequestsByUserId() {
         ItemRequestDto itemRequestDtoWithAnswersForOutput = ItemRequestDto.builder()
                 .id(1)
                 .description("Book")
@@ -145,7 +144,7 @@ class ItemRequestControllerTest {
                 .thenReturn(List.of(itemRequestDtoWithAnswersForOutput));
 
         mockMvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header("X-Sharer-User-Id", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content()
@@ -155,15 +154,15 @@ class ItemRequestControllerTest {
 
     @SneakyThrows
     @Test
-    void getAllRequests() {
+    void test_getAllRequests() {
         ItemRequestDto itemRequestDtoWithAnswers = ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .requester(null)
+                .requestor(null)
                 .created(now)
                 .build();
 
-        when(itemRequestService.getAllRequests(anyInt()))
+        when(itemRequestService.getRequests(anyInt()))
                 .thenReturn(List.of(itemRequestDtoWithAnswers));
 
         mockMvc.perform(get("/requests/all")
@@ -172,16 +171,16 @@ class ItemRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .json(objectMapper.writeValueAsString(List.of(itemRequestDtoWithAnswers))));
-        verify(itemRequestService, times(1)).getAllRequests(anyInt());
+        verify(itemRequestService, times(1)).getRequests(anyInt());
     }
 
     @SneakyThrows
     @Test
-    void getItemRequestById() {
+    void test_getItemRequestById() {
         ItemRequestDto itemRequestDtoWithAnswers = ItemRequestDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
-                .requester(null)
+                .requestor(null)
                 .created(now)
                 .build();
 

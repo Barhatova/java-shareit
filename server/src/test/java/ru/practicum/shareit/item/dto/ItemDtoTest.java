@@ -14,13 +14,13 @@ class ItemDtoTest {
     private final JacksonTester<ItemDto> json;
 
     @Test
-    void testSerialize() throws Exception {
+    void test_Serialize() throws Exception {
         ItemDto itemDto = ItemDto.builder()
                 .id(1)
                 .requestId(1)
                 .available(true)
-                .description("Описание")
-                .name("Предмет")
+                .description("desc")
+                .name("name")
                 .build();
 
         JsonContent<ItemDto> result = json.write(itemDto);
@@ -31,9 +31,9 @@ class ItemDtoTest {
                 .hasJsonPath("$.name");
 
         assertThat(result).extractingJsonPathNumberValue("@.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("@.description").isEqualTo("Описание");
+        assertThat(result).extractingJsonPathStringValue("@.description").isEqualTo("desc");
         assertThat(result).extractingJsonPathNumberValue("@.requestId").isEqualTo(1);
         assertThat(result).extractingJsonPathBooleanValue("@.available").isEqualTo(true);
-        assertThat(result).extractingJsonPathStringValue("@.name").isEqualTo("Предмет");
+        assertThat(result).extractingJsonPathStringValue("@.name").isEqualTo("name");
     }
 }

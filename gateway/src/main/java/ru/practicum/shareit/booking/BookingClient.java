@@ -1,7 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -16,13 +14,13 @@ import ru.practicum.shareit.client.BaseClient;
 import java.util.Map;
 
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingClient extends BaseClient {
-    static final String API_PREFIX = "/bookings";
+    private static final String API_PREFIX = "/bookings";
 
     @Autowired
     public BookingClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
-        super(builder
+        super(
+                builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
                         .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
@@ -33,22 +31,29 @@ public class BookingClient extends BaseClient {
         return post("", userId, requestDto);
     }
 
-    public ResponseEntity<Object> approve(Integer userId, Integer bookingId, Boolean approved) {
-        Map<String, Object> parameters = Map.of("approved", approved);
-        return patch("/" + userId + "?approved={approved}", bookingId, parameters, null);
+    public ResponseEntity<Object> approve(Integer bookingId, Integer userId, Boolean approved) {
+        Map<String, Object> parameters = Map.of(
+                "approved", approved
+        );
+        return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
     }
 
     public ResponseEntity<Object> getBookingById(Integer userId, Integer bookingId) {
-        return get("/" + userId, bookingId);
+        return get("/" + bookingId, userId);
     }
 
+
     public ResponseEntity<Object> getAllBookingByUserId(Integer userId, BookingState state) {
-        Map<String, Object> parameters = Map.of("state", state.name());
+        Map<String, Object> parameters = Map.of(
+                "state", state.name()
+        );
         return get("?state={state}", userId, parameters);
     }
 
     public ResponseEntity<Object> getAllBookingsByOwner(Integer userId, BookingState state) {
-        Map<String, Object> parameters = Map.of("state", state.name());
+        Map<String, Object> parameters = Map.of(
+                "state", state.name()
+        );
         return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 }

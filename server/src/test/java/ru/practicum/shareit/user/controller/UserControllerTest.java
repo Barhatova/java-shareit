@@ -1,17 +1,15 @@
 package ru.practicum.shareit.user.controller;
-/*
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.user.model.NewUserRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -19,7 +17,6 @@ import ru.practicum.shareit.user.service.UserService;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,6 +29,7 @@ public class UserControllerTest {
     ObjectMapper objectMapper;
     @MockBean
     UserService userService;
+
     @Autowired
     MockMvc mockMvc;
     User user;
@@ -39,7 +37,7 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1, "name", "email@mail.ru");
+        user = new User(1, "name", "name@yandex.ru");
         userDto = new UserDto(user.getId(), user.getName(), user.getEmail());
 
         assertEquals(user.getId(), userDto.getId());
@@ -49,8 +47,8 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void addUserToBD_WhenAllAreOk_ThenReturnSavedUser() {
-        when(userService.createUser(ArgumentMatchers.<User>any()))
+    void test_createUserToBD_ThenReturnSavedUser() {
+        when(userService.createUser(any()))
                 .thenReturn(user);
 
         mockMvc.perform(post("/users")
@@ -64,8 +62,8 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void updateInStorage_whenAllIsOk_returnUserDto() {
-        when(userService.updateUser(anyInt(), ArgumentMatchers.<NewUserRequest>any()))
+    void test_updateInStorage_returnUserDto() {
+        when(userService.updateUser(anyInt(), any()))
                 .thenReturn(user);
         String result = mockMvc.perform(patch("/users/{userId}", userDto.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,13 +75,12 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
         assertEquals(objectMapper.writeValueAsString(userDto), result);
     }
 
     @SneakyThrows
     @Test
-    void getAllUsersFromStorage_whenInvoked_thenResponseStatusOkWithUserCollection() {
+    void test_getAllUsersFromStorage_thenResponseStatusOkWithUserCollection() {
         when(userService.getAllUser())
                 .thenReturn(List.of(user));
 
@@ -98,7 +95,7 @@ public class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void getUserById() {
+    void test_getUserById() {
         when(userService.getUserById(anyInt()))
                 .thenReturn(user);
         String result = mockMvc.perform(get("/users/{userId}", user.getId()))
@@ -106,15 +103,14 @@ public class UserControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
         assertEquals(objectMapper.writeValueAsString(user), result);
     }
 
     @SneakyThrows
     @Test
-    void deleteUserFromDB_whenAllareRight_ThenReturnOk() {
+    void test_deleteUserFromDB_ThenReturnOk() {
         mockMvc.perform(delete("/users/{id}", user.getId()))
                 .andExpect(status().isOk());
         verify(userService, times(1)).deleteUserById(user.getId());
     }
-}*/
+}

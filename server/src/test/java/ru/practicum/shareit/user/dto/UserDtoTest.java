@@ -15,11 +15,11 @@ class UserDtoTest {
     private final JacksonTester<UserDto> json;
 
     @Test
-    void testSerialize() throws Exception {
+    void test_serialize() throws Exception {
         UserDto userDto = UserDto.builder()
                 .id(1)
-                .name("Alex")
-                .email("alex@mail.com")
+                .name("name")
+                .email("name@yandex.ru")
                 .build();
 
         JsonContent<UserDto> result = json.write(userDto);

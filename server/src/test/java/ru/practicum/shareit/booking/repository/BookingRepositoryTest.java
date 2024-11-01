@@ -29,12 +29,12 @@ class BookingRepositoryTest {
 
     private final User booker = User.builder()
             .name("name")
-            .email("name@mail.com")
+            .email("name@yandex.ru")
             .build();
 
     private final User owner = User.builder()
             .name("name1")
-            .email("name1@mail.com")
+            .email("name1@yandex.ru")
             .build();
 
     private final Item item = Item.builder()
@@ -48,32 +48,32 @@ class BookingRepositoryTest {
             .item(item)
             .booker(booker)
             .status(BookingStatus.APPROVED)
-            .start(LocalDateTime.now().minusHours(1L))
-            .end(LocalDateTime.now().plusDays(1L))
+            .start(LocalDateTime.now().minusHours(1))
+            .end(LocalDateTime.now().plusDays(1))
             .build();
 
     private final Booking pastBooking = Booking.builder()
             .item(item)
             .booker(booker)
             .status(BookingStatus.APPROVED)
-            .start(LocalDateTime.now().minusDays(2L))
-            .end(LocalDateTime.now().minusDays(1L))
+            .start(LocalDateTime.now().minusDays(2))
+            .end(LocalDateTime.now().minusDays(1))
             .build();
 
     private final Booking futureBooking = Booking.builder()
             .item(item)
             .booker(booker)
             .status(BookingStatus.APPROVED)
-            .start(LocalDateTime.now().plusDays(1L))
-            .end(LocalDateTime.now().plusDays(2L))
+            .start(LocalDateTime.now().plusDays(1))
+            .end(LocalDateTime.now().plusDays(2))
             .build();
 
     private final Booking currentBooking = Booking.builder()
             .item(item)
             .booker(booker)
             .status(BookingStatus.APPROVED)
-            .start(LocalDateTime.now().minusHours(1L))
-            .end(LocalDateTime.now().plusDays(1L))
+            .start(LocalDateTime.now().minusHours(1))
+            .end(LocalDateTime.now().plusDays(1))
             .build();
 
     @BeforeEach
@@ -88,25 +88,25 @@ class BookingRepositoryTest {
     }
 
     @AfterEach
-    public void deleteAll() {
+    public void test_deleteAll() {
         bookingRepository.deleteAll();
     }
 
     @Test
-    void getByBookerIdOrderByStartDesc() {
+    void test_getByBookerIdOrderByStartDesc() {
         Collection<Booking> bookings = bookingRepository.getByBookerIdOrderByStartDesc(booker.getId());
         assertEquals(bookings.size(), 3);
     }
 
     @Test
-    void getByBookerIdAndEndIsBeforeOrderByStartDesc() {
+    void test_getByBookerIdAndEndIsBeforeOrderByStartDesc() {
         Collection<Booking> bookings = bookingRepository
                 .getByBookerIdAndEndIsBeforeOrderByStartDesc(booker.getId(), LocalDateTime.now());
         assertEquals(bookings.size(), 1);
     }
 
     @Test
-    void getByBookerIdAndStatusIsOrderByStartDesc() {
+    void test_getByBookerIdAndStatusIsOrderByStartDesc() {
         Collection<Booking> bookings = bookingRepository
                 .getByBookerIdAndStatusIsOrderByStartDesc(booker.getId(), BookingStatus.APPROVED);
         assertEquals(bookings.size(), 3);
@@ -114,25 +114,27 @@ class BookingRepositoryTest {
     }
 
     @Test
-    void getByBooker_getByBookerIdAndStartIsAfterOrderByStartDesc() {
-        Collection<Booking> bookings = bookingRepository.getByBookerIdAndStartIsAfterOrderByStartDesc(booker.getId(), LocalDateTime.now());
+    void test_getByBooker_getByBookerIdAndStartIsAfterOrderByStartDesc() {
+        Collection<Booking> bookings = bookingRepository.getByBookerIdAndStartIsAfterOrderByStartDesc(booker.getId(),
+                LocalDateTime.now());
         assertEquals(1, bookings.size());
     }
 
     @Test
-    void getByBooker_getByBookerIdAndEndIsBeforeOrderByStartDesc() {
-        Collection<Booking> bookings = bookingRepository.getByBookerIdAndEndIsBeforeOrderByStartDesc(booker.getId(), LocalDateTime.now());
+    void test_getByBooker_getByBookerIdAndEndIsBeforeOrderByStartDesc() {
+        Collection<Booking> bookings = bookingRepository.getByBookerIdAndEndIsBeforeOrderByStartDesc(booker.getId(),
+                LocalDateTime.now());
         assertEquals(1, bookings.size());
     }
 
     @Test
-    void getByBooker_getByItemOwnerId() {
+    void test_getByBooker_getByItemOwnerId() {
         Collection<Booking> bookings = bookingRepository.getByItemOwnerId(item.getOwnerId());
         assertEquals(3, bookings.size());
     }
 
     @Test
-    void getByBooker_getBookingsItem() {
+    void test_getByBooker_getBookingsItem() {
         Collection<Booking> bookings = bookingRepository.getBookingsItem(item.getId());
         assertEquals(3, bookings.size());
     }

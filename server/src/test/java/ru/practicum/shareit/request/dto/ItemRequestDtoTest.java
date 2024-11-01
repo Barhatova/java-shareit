@@ -23,28 +23,28 @@ class ItemRequestDtoTest {
 
     @Test
     @SneakyThrows
-    public void testItemRequestDtoSerialize() {
+    public void test_itemRequestDtoSerialize() {
         User user = User.builder()
                 .id(1)
-                .name("Alex")
-                .email("alex@mail.com")
+                .name("name")
+                .email("name@yandex.ru")
                 .build();
         ItemRequestDto dto = ItemRequestDto.builder()
                 .id(1)
-                .description("Описание")
-                .requester(UserMapper.userMapToDto(user))
+                .description("desc")
+                .requestor(UserMapper.userMapToDto(user))
                 .created(LocalDateTime.now())
                 .build();
         JsonContent<ItemRequestDto> content = json.write(dto);
         assertThat(content)
                 .hasJsonPath("$.id")
                 .hasJsonPath("$.description")
-                .hasJsonPath("$.requester")
+                .hasJsonPath("$.requestor")
                 .hasJsonPath("$.created");
 
         assertThat(content).extractingJsonPathNumberValue("@.id").isEqualTo(1);
-        assertThat(content).extractingJsonPathStringValue("@.description").isEqualTo("Описание");
-        assertThat(content).extractingJsonPathStringValue("@.requester.name")
-                .isEqualTo("Alex");
+        assertThat(content).extractingJsonPathStringValue("@.description").isEqualTo("desc");
+        assertThat(content).extractingJsonPathStringValue("@.requestor.name")
+                .isEqualTo("name");
     }
 }

@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.repository;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,58 +12,67 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class CommentRepositoryTest {
+
     @Autowired
-    CommentRepository commentRepository;
+    private CommentRepository commentRepository;
+
     @Autowired
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
+
     @Autowired
-    UserRepository userRepository;
-    User savedUser;
-    Item savedItem;
+    private UserRepository userRepository;
+
+    private User savedUser;
+    private Item savedItem;
 
     @BeforeEach
     void setUp() {
         User user = new User();
-        user.setName("Alex");
-        user.setEmail("alex@mail.com");
+        user.setName("name");
+        user.setEmail("name@yandex.ru");
         savedUser = userRepository.save(user);
+
         Item item = new Item();
-        item.setName("Предмет");
-        item.setDescription("Описание предмета");
+        item.setName("name");
+        item.setDescription("desc");
         item.setAvailable(true);
         item.setOwnerId(savedUser.getId());
         savedItem = itemRepository.save(item);
     }
 
     @Test
-    void testGetAllByItemId_shouldReturnCommentsForGivenItemId() {
+    void test_getAllByItemId_shouldReturnCommentsByItemId() {
         Comment comment1 = new Comment();
-        comment1.setText("Хороший предмет!");
+        comment1.setText("desc");
         comment1.setAuthor(savedUser);
         comment1.setItem(savedItem);
         comment1.setCreated(LocalDateTime.now());
         commentRepository.save(comment1);
+
         Comment comment2 = new Comment();
-        comment2.setText("Отлично");
+        comment2.setText("desc1");
         comment2.setAuthor(savedUser);
         comment2.setItem(savedItem);
         comment2.setCreated(LocalDateTime.now());
         commentRepository.save(comment2);
+
         List<Comment> comments = commentRepository.getAllByItemId(savedItem.getId());
+
         assertThat(comments).hasSize(2);
-        assertThat(comments).extracting(Comment::getText).containsExactlyInAnyOrder("Хороший предмет!",
-                "Отлично");
+        assertThat(comments).extracting(Comment::getText).containsExactlyInAnyOrder("desc",
+                "desc1");
     }
 
     @Test
-    void testGetAllByItemId_shouldReturnEmptyListWhenNoComments() {
+    void test_getAllByItemId_shouldReturnEmptyList() {
         List<Comment> comments = commentRepository.getAllByItemId(savedItem.getId());
+
         assertThat(comments).isEmpty();
     }
 }

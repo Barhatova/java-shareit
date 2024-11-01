@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.mapper;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemRequestMapper {
 
     public static ItemRequestDto toItemRequestDto(ItemRequest request) {
@@ -19,21 +20,20 @@ public class ItemRequestMapper {
                 .id(request.getId())
                 .description(request.getDescription())
                 .created(request.getCreated())
-                .requester(UserMapper.userMapToDto(request.getCreator()))
+                .requestor(UserMapper.userMapToDto(request.getCreator()))
                 .items(request.getItems() != null ? request.getItems()
                         .stream()
                         .map(ItemMapper::itemMapToDto)
                         .collect(Collectors.toList())
                         : new ArrayList<>())
                 .build();
-
     }
 
     public static ItemRequest toItemRequest(ItemRequestDto requestDto) {
         return ItemRequest.builder()
                 .id(requestDto.getId())
                 .description(requestDto.getDescription())
-                .creator(UserMapper.mapToUser(requestDto.getRequester()))
+                .creator(UserMapper.mapToUser(requestDto.getRequestor()))
                 .created(requestDto.getCreated())
                 .build();
     }

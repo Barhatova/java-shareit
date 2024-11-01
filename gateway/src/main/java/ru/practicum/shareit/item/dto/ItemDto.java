@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.Marker;
 
 
@@ -13,15 +14,19 @@ import ru.practicum.shareit.Marker;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
-    private Integer id;
+    Integer id;
+
     @Size(min = 1, max = 64, groups = {Marker.Create.class, Marker.Update.class})
     @NotBlank(groups = Marker.Create.class)
-    private String name;
+    String name;
+
     @Size(min = 1, max = 64, groups = {Marker.Create.class, Marker.Update.class})
     @NotBlank(groups = Marker.Create.class)
-    private String description;
+    String description;
+
     @NotNull(groups = Marker.Create.class)
-    private Boolean available;
-    private Integer requestId;
+    Boolean available;
+    Integer requestId;
 }

@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -13,10 +11,11 @@ import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
+;
+
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemClient extends BaseClient {
-    static final String API_PREFIX = "/items";
+    private static final String API_PREFIX = "/items";
 
     @Autowired
     public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -32,24 +31,25 @@ public class ItemClient extends BaseClient {
         return post("", userId, itemDto);
     }
 
-    public ResponseEntity<Object> updateItem(Integer userId, Integer itemId, ItemDto itemDto) {
-        return patch("/" + userId, itemId, itemDto);
+    public ResponseEntity<Object> updateItem(ItemDto itemDto, Integer itemId, Integer userId) {
+        return patch("/" + itemId, userId, itemDto);
     }
 
     public ResponseEntity<Object> getByText(String text) {
+
         return get(text);
     }
 
     public ResponseEntity<Object> getAllItemsUser(Integer userId) {
+
         return get("", userId);
     }
 
-
-    public ResponseEntity<Object> getById(Integer userId, Integer itemId) {
-        return get("/" + userId, itemId);
+    public ResponseEntity<Object> getById(Integer itemId, Integer userId) {
+        return get("/" + itemId, userId);
     }
 
-    public ResponseEntity<Object> addComment(Integer userId, Integer itemId, CommentDto commentDto) {
-        return post("/" + userId + "/comment", itemId, commentDto);
+    public ResponseEntity<Object> addComment(Integer itemId, Integer userId, CommentDto commentDto) {
+        return post("/" + itemId + "/comment", userId, commentDto);
     }
 }

@@ -1,13 +1,16 @@
 package ru.practicum.shareit.user.model;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @AllArgsConstructor
-public class NewUserRequest {
-    private String email;
-    private String name;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class UpdateUserRequest {
+    String name;
+    String email;
 
     public boolean hasName() {
         return  ! (name == null || name.isBlank());
