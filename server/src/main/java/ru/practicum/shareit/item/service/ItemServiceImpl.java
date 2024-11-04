@@ -62,8 +62,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(Integer itemId, Integer userId, UpdateItemRequestDto request) {
         log.debug("updateItem({}, {}, {})",itemId, userId, request);
         Item updatedItem = repository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("инструмент не найден"));
-        if (updatedItem.getOwnerId() != userId) {
+                .orElseThrow(() -> new NotFoundException("Инструмент не найден"));
+        if (updatedItem.getOwnerId().equals(userId)) {
             throw new NotFoundException("У пользователя нет такого инcтрумента");
         }
         ItemMapper.updateItemFields(updatedItem, request);
@@ -165,7 +165,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validateItem(ItemDto item) {
-        log.info("itemValidation({})", item);
+        log.info("validateItem({})", item);
         if (item.getAvailable() == null) {
             throw new ValidationException("При добавлении нового инструмента он должен быть доступен");
         }
