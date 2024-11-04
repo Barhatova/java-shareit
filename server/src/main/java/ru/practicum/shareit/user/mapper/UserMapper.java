@@ -6,7 +6,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UpdateUserRequest;
 
-
 @Slf4j
 @Component
 public class UserMapper {

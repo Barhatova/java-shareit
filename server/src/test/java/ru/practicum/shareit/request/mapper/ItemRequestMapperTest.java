@@ -43,7 +43,7 @@ public class ItemRequestMapperTest {
 
         ItemRequest itemRequest = new ItemRequest();
         itemRequest.setId(1);
-        itemRequest.setDescription("Описание предмета");
+        itemRequest.setDescription("desc");
         itemRequest.setCreator(user);
         itemRequest.setCreated(LocalDateTime.now());
 
