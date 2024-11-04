@@ -29,7 +29,6 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public User createUser(@RequestBody User user) {
-        log.debug("Добавление нового пользователя: {}", user);
         if (user == null) {
             throw new NotFoundException("Не указан пользователь для добавления");
         }
@@ -40,7 +39,6 @@ public class UserController {
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public User updateUser(@PathVariable Integer userId, @RequestBody UpdateUserRequest request) {
-        log.debug("Обновление данных существующего пользователя: {}", request);
         if (request == null) {
             throw new NotFoundException("Не указан пользователь для обновления");
         }
@@ -50,19 +48,16 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public void deleteUserById(@PathVariable Integer userId) {
-        log.debug("Удаление пользователя по id - {}", userId);
         userService.deleteUserById(userId);
     }
 
     @GetMapping
     public Collection<User> getAllUser() {
-        log.debug("Получение всех существующих пользователей");
         return userService.getAllUser();
     }
 
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable Integer userId) {
-        log.debug("Получение пользователя по id - {}", userId);
         return userService.getUserById(userId);
     }
 }

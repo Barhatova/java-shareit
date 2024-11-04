@@ -21,40 +21,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        log.debug("CreateUser({})", user);
         userValidation(user);
         userRepository.save(user);
-
         return user;
     }
 
     @Override
     public User updateUser(Integer userId, UpdateUserRequest request) {
-        log.debug("UpdateUser({},{})", userId, request);
         User updatedUser = getUserById(userId);
         if (request.getEmail() != null) {
             updatedUser.setEmail(request.getEmail());
         }
         UserMapper.updateUserFields(updatedUser, request);
-
         return userRepository.save(updatedUser);
     }
 
     @Override
     public void deleteUserById(Integer userId) {
-        log.debug("deleteUserById({})", userId);
         userRepository.deleteById(userId);
     }
 
     @Override
     public Collection<User> getAllUser() {
-        log.debug("getAllUsers()");
         return userRepository.findAll();
     }
 
     @Override
     public User getUserById(Integer userId) {
-        log.debug("getUserById({})", userId);
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new NotFoundException("Пользователя с таким id не существует");
@@ -63,7 +56,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private void userValidation(User user) {
-        log.debug("Валидация пользователя: {}", user);
         if (user.getName() == null || user.getName().isBlank()) {
             log.warn("Имя пользователя не задано");
             throw new ValidationException("Имя пользователя не задано");

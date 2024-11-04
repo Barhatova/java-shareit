@@ -25,5 +25,18 @@ public class UserMapperTest {
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getEmail(), result.getEmail());
     }
-}
 
+    @Test
+    void test_mapToUser() {
+        UserDto userDto = new UserDto();
+        User user = new User();
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+
+        User result = UserMapper.mapToUser(userDto);
+
+        assertNotNull(result);
+        assertEquals(userDto.getName(), result.getName());
+        assertEquals(userDto.getEmail(), result.getEmail());
+    }
+}

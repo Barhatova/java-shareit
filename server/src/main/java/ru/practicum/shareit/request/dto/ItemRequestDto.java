@@ -13,6 +13,7 @@ import java.util.Collection;
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public final class ItemRequestDto {
     Integer id;

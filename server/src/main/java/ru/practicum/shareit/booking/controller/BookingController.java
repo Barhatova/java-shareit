@@ -28,7 +28,6 @@ public class BookingController {
     @PostMapping
     public BookingDto createBooking(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                  @RequestBody NewBookingRequestDto bookingRequest) {
-        log.debug("Добавление нового бронирования");
         return bookingService.createBooking(userId,bookingRequest);
     }
 
@@ -36,28 +35,24 @@ public class BookingController {
     public BookingDto approve(@RequestHeader("X-Sharer-User-Id") Integer userId,
                               @PathVariable Integer bookingId,
                               @RequestParam Boolean approved) {
-        log.debug("Одобрение бронирования инструмента Арендодателем");
         return bookingService.approve(userId,bookingId,approved);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto getBookingById(@RequestHeader("X-Sharer-User-Id") Integer userId,
                               @PathVariable Integer bookingId) {
-        log.debug("Получение бронирования по id");
         return bookingService.getBookingById(userId, bookingId);
     }
 
     @GetMapping
     public Collection<BookingDto> getAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                                  @RequestParam(defaultValue = "ALL") String state) {
-        log.debug("Получение всех бронировний пользователя");
         return bookingService.getAllBookingByUserId(userId, state);
     }
 
     @GetMapping("/owner")
     public Collection<BookingDto> getAllBookingsByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                                    @RequestParam(defaultValue = "ALL") String state) {
-        log.debug("Получение списка Арендованных инсрументов пользователя");
         return bookingService.getAllBookingsByOwner(userId, state);
     }
 }

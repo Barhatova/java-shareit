@@ -24,26 +24,22 @@ public class ItemRequestController {
     @PostMapping
     public ItemRequestDto createItemRequest(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                      @RequestBody ItemRequestDto itemRequestDto) {
-        log.debug("Добавление нового запроса на инструмент");
         return requestService.createItemRequest(userId, itemRequestDto);
     }
 
     @GetMapping("{requestId}")
     public ItemRequestDto getRequestById(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                           @PathVariable Integer requestId) {
-        log.debug("Получить запрос по id");
         return requestService.getRequestById(userId, requestId);
     }
 
     @GetMapping
     public Collection<ItemRequestDto> getUserRequests(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        log.debug("Получить список своих запросов вместе с данными об ответах на них");
         return requestService.getUserRequests(userId);
     }
 
     @GetMapping("/all")
     public Collection<ItemRequestDto> getRequests(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        log.debug("Получить список запросов, созданных другими пользователями");
         return requestService.getRequests(userId);
     }
 }

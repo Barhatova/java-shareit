@@ -38,7 +38,7 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemService.getItemById(bookingRequest.getItemId());
         User owner = userService.getUserById(item.getOwnerId());
         if (owner.getId().equals(bookerId)) {
-            throw new BookingException("Арендодатель не может арендовать свой инcтрумент");
+            throw new BookingException("Пользователь не может арендовать собственную вещь");
         }
         if (item.getAvailable()) {
             Booking booking = Booking.builder()
@@ -51,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
 
             return BookingMapper.toBookingDto(bookingRepository.save(booking));
         } else {
-            throw new NotAvailableException("Инструмент уже в аренде");
+            throw new NotAvailableException("Вещь уже в аренде");
         }
     }
 
@@ -65,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
             throw new AlreadyExistsException("Бронирование уже одобрено владельцем инструмента");
         }
         if (!ownerId.equals(userId)) {
-            throw new BookingException("Пользователь с id = " + userId + "не являеться владельцем инстумента");
+            throw new BookingException("Пользователь с id {}" + userId + "не является владельцем вещи");
         }
         if (approve) {
             booking.setStatus(BookingStatus.APPROVED);
@@ -80,11 +80,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBookingById(Integer userId, Integer bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException(("Бронирование с id =" + bookingId + "не найдено")));
+                .orElseThrow(() -> new NotFoundException(("Бронирование с id {}" + bookingId + "не найдено")));
         if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwnerId().equals(userId)) {
             return BookingMapper.toBookingDto(booking);
         } else {
-            throw new ValidationException("Пользователь с id =" + userId + "не является владельцем");
+            throw new ValidationException("Пользователь с id {}" + userId + "не является владельцем");
         }
     }
 

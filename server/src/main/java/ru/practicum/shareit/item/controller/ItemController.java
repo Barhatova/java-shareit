@@ -29,7 +29,6 @@ public class ItemController {
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                               @RequestBody ItemDto item) {
-        log.debug("Добавление нового инструмента для пользователя с id - {}, {}", userId,item);
         if (item == null) {
             throw new NotFoundException("Не указан инструмент для добавления");
         }
@@ -40,26 +39,22 @@ public class ItemController {
     public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") Integer userId,
                               @RequestBody UpdateItemRequestDto request,
                               @PathVariable Integer itemId) {
-        log.debug("Обновление инструмента пользователя - {}, {}", request, itemId);
         return itemService.updateItem(itemId,userId,request);
     }
 
     @GetMapping("/search")
     public Collection<ItemDto> getByText(@RequestParam String text) {
-        log.debug("Поиск достпуных для аренды инструментов по названию и описанию - {}", text);
         return itemService.getByText(text);
     }
 
     @GetMapping
     public Collection<ItemDto> getAllItemsUser(@RequestHeader("X-Sharer-User-Id") Integer userId) {
-        log.debug("Получить все инструменты пользователя с id - {} для сдачи в аренду", userId);
         return itemService.getAllItemsUser(userId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto getById(@RequestHeader("X-Sharer-User-Id") Integer userId,
                             @PathVariable Integer itemId) {
-        log.info("Получение инструмента по id {}", itemId);
         return itemService.getById(itemId, userId);
     }
 
@@ -67,7 +62,6 @@ public class ItemController {
     public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Integer userId,
                                     @PathVariable Integer itemId,
                                     @RequestBody CommentDto commentDto) {
-        log.info("Добавление нового комментария к инструменту");
         return itemService.addComment(itemId, userId, commentDto);
     }
 }

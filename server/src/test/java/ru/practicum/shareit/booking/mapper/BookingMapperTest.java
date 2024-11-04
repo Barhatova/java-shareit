@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.mapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.ShortItemBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
@@ -53,5 +54,21 @@ public class BookingMapperTest {
         assertEquals(booking.getStart(), result.getStart());
         assertEquals(booking.getEnd(), result.getEnd());
         assertEquals(booking.getStatus(), result.getStatus());
+    }
+
+    @Test
+    void test_toItemBookingDto() {
+        ShortItemBookingDto shortItemBookingDto = new ShortItemBookingDto();
+
+        Booking result = Booking.builder()
+                .id(shortItemBookingDto.getId())
+                .start(shortItemBookingDto.getStart())
+                .end(shortItemBookingDto.getEnd())
+                .build();
+
+        assertNotNull(result);
+        assertEquals(shortItemBookingDto.getId(), result.getId());
+        assertEquals(shortItemBookingDto.getStart(), result.getStart());
+        assertEquals(shortItemBookingDto.getEnd(), result.getEnd());
     }
 }

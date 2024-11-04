@@ -2,16 +2,11 @@ package ru.practicum.shareit.item.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.mapper.BookingMapper;
+import ru.practicum.shareit.booking.dto.ShortItemBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,6 +16,8 @@ public class ItemMapperTest {
     ItemRequest itemRequest;
     Booking lastBooking;
     Booking nextBooking;
+    ShortItemBookingDto lastBooking1;
+    ShortItemBookingDto nextBooking1;
 
     @Test
     void test_itemMapToDto() {
@@ -44,5 +41,26 @@ public class ItemMapperTest {
         assertEquals(item.getItemRequest(), result.getRequestId());
         assertEquals(item.getLastBooking(), result.getLastBooking());
         assertEquals(item.getNextBooking(), result.getNextBooking());
+    }
+
+    @Test
+    void test_mapToItem() {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(2);
+        itemDto.setName("name");
+        itemDto.setDescription("desc");
+        itemDto.setAvailable(true);
+        itemDto.setLastBooking(lastBooking1);
+        itemDto.setNextBooking(nextBooking1);
+
+        Item result = ItemMapper.mapToItem(itemDto);
+
+        assertNotNull(result);
+        assertEquals(itemDto.getId(), result.getId());
+        assertEquals(itemDto.getName(), result.getName());
+        assertEquals(itemDto.getDescription(), result.getDescription());
+        assertEquals(itemDto.getAvailable(), result.getAvailable());
+        assertEquals(itemDto.getLastBooking(), result.getLastBooking());
+        assertEquals(itemDto.getNextBooking(), result.getNextBooking());
     }
 }

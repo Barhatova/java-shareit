@@ -46,7 +46,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(Integer userId, ItemDto item) {
-        log.debug("addNewItem({}, {})", userId,item);
         validateItem(item);
         User user = userService.getUserById(userId);
         Item newItem = ItemMapper.mapToItem(item);
@@ -54,13 +53,11 @@ public class ItemServiceImpl implements ItemService {
         newItem.setItemRequest(item.getRequestId() != null ?
                 ItemRequestMapper.toItemRequest(itemRequestService.getRequestById(userId, item.getRequestId())) : null);
         itemRepository.save(newItem);
-
         return ItemMapper.itemMapToDto(newItem);
     }
 
     @Override
     public ItemDto updateItem(Integer itemId, Integer userId, UpdateItemRequestDto request) {
-        log.debug("updateItem({}, {}, {})",itemId, userId, request);
         Item updatedItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("У пользователя нет вещи"));
         if (!Objects.equals(updatedItem.getOwnerId(), userId)) {
@@ -72,7 +69,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDto> getByText(String text) {
-        log.debug("findItemByNameOrDescription({})", text);
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
@@ -84,20 +80,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getItemById(Integer itemId) {
-        log.debug("getItemById({})", itemId);
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Инструмента id = " + itemId + "не существует"));
+                .orElseThrow(() -> new NotFoundException("\"Вещи с id {}" + itemId + "не существует\""));
     }
 
     @Override
     public  Collection<ItemDto> getAllItemsUser(Integer userId) {
-        log.debug("getAllItemsUser({})", userId);
         userService.getUserById(userId);
-
         List<ItemDto> item = itemRepository.getAllByOwnerId(userId).stream()
                 .map(ItemMapper::itemMapToDto)
                 .toList();
-
         List<ItemDto> list = new ArrayList<>();
         item.stream().map(this::updateBookings).forEach(i -> {
             CommentMapper.toDtoList(commentRepository.getAllByItemId(i.getId()));
@@ -109,14 +101,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Integer getOwnerId(Integer itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("Инструмент не существует", itemId)))
+                .orElseThrow(() -> new NotFoundException(String.format("У пользователя нет вещи", itemId)))
                 .getOwnerId();
     }
 
     @Override
     public ItemDto getById(Integer itemId, Integer userId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Инструмента id = " + itemId + "не существует"));
+                .orElseThrow(() -> new NotFoundException("Вещи с id {} " + itemId + "не существует"));
         ItemDto result = ItemMapper.itemMapToDto(item);
         if (Objects.equals(item.getOwnerId(), userId)) {
             updateBookings(result);
@@ -132,7 +124,6 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.getUserById(userId);
         List<Booking> bookings = bookingRepository
                 .getByItemIdAndBookerIdAndStatusIsAndEndIsBefore(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
-        log.info(bookings.toString());
         if (!bookings.isEmpty() && bookings.get(0).getStart().isBefore(LocalDateTime.now())) {
             Comment comment = CommentMapper.toComment(commentDto);
             comment.setItem(item);
@@ -140,7 +131,8 @@ public class ItemServiceImpl implements ItemService {
             comment.setCreated(LocalDateTime.now());
             return CommentMapper.toDto(commentRepository.save(comment));
         } else {
-            throw new NotAvailableException("Бронирование для пользователя с id = " + userId + " и товара с id = " + itemId + "  не найдено");
+            throw new NotAvailableException("Бронирование для пользователя с id {}" + userId + " и вещи с id {}" +
+                    itemId + "не найдено");
         }
     }
 
@@ -165,7 +157,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validateItem(ItemDto item) {
-        log.info("validateItem({})", item);
         if (item.getAvailable() == null) {
             throw new ValidationException("При добавлении нового инструмента он должен быть доступен");
         }
