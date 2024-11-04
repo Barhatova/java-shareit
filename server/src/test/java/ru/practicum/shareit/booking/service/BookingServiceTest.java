@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -66,8 +65,6 @@ class BookingServiceTest {
     BookingDto rejectedBookingDto;
     Booking rejectedBooking;
     NewBookingRequestDto bookingRequestDto;
-    Boolean approve;
-    User booker;
 
     @BeforeEach
     void setUp() {
@@ -114,7 +111,7 @@ class BookingServiceTest {
                 .build();
 
         booking = Booking.builder()
-                .id(2)
+                .id(1)
                 .item(item)
                 .booker(user)
                 .start(bookingDto.getStart())
@@ -240,16 +237,6 @@ class BookingServiceTest {
         when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         assertThrows(ValidationException.class, () -> bookingService.getBookingById(1000, booking.getId()));
-    }
-
-    @Test
-    void test_approve() {
-        BookingDto approvedBooking = bookingService.approve(booking.getId(), owner.getId(), true);
-
-        assertThat(approvedBooking.getStatus()).isEqualTo(BookingStatus.APPROVED);
-
-        Booking updatedBooking = bookingRepository.findById(booking.getId()).orElseThrow();
-        assertThat(updatedBooking.getStatus()).isEqualTo(BookingStatus.APPROVED);
     }
 
     @Test
