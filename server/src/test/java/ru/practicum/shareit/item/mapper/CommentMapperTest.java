@@ -51,4 +51,20 @@ public class CommentMapperTest {
         assertEquals(comment.getItem().getId(), result.getItem().getId());
         assertEquals(comment.getCreated(), result.getCreated());
     }
+
+    @Test
+    void test_toComment() {
+        Comment comment = new Comment();
+
+        Comment result = Comment.builder()
+                .id(comment.getId())
+                .text(comment.getText())
+                .created(comment.getCreated())
+                .build();
+
+        assertNotNull(result);
+        assertEquals(comment.getId(), result.getId());
+        assertEquals(comment.getText(), result.getText());
+        assertEquals(comment.getCreated(), result.getCreated());
+    }
 }

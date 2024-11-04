@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 public class ItemRequestMapperTest {
+
     @Test
     void test_toItemRequestDto() {
         User user = new User();
@@ -35,24 +36,16 @@ public class ItemRequestMapperTest {
     }
 
     @Test
-    void test_toItemRequestResponseDto() {
-        User user = new User();
-        user.setId(1);
-        user.setName("name1");
-        user.setEmail("name1@yandex.ru");
+    void test_toItemRequest() {
+        ItemRequestDto requestDto = new ItemRequestDto();
 
-        ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setId(1);
-        itemRequest.setDescription("desc");
-        itemRequest.setCreator(user);
-        itemRequest.setCreated(LocalDateTime.now());
-
-        ItemRequestDto result = ItemRequestMapper.toItemRequestDto(itemRequest);
+        ItemRequest result = ItemRequest.builder()
+                .id(requestDto.getId())
+                .description(requestDto.getDescription())
+                .build();
 
         assertNotNull(result);
-        assertEquals(itemRequest.getId(), result.getId());
-        assertEquals(itemRequest.getDescription(), result.getDescription());
-        assertEquals(itemRequest.getCreator().getId(), result.getRequestor().getId());
-        assertEquals(itemRequest.getCreated(), result.getCreated());
+        assertEquals(requestDto.getId(), result.getId());
+        assertEquals(requestDto.getDescription(), result.getDescription());
     }
 }

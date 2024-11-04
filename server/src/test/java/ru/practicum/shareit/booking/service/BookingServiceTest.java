@@ -17,16 +17,22 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +46,8 @@ class BookingServiceTest {
     private ItemService itemService;
     private BookingService bookingService;
     private BookingRepository bookingRepository;
+    private UserRepository userRepository;
+    private ItemRepository itemRepository;
 
     User user;
     User owner;
@@ -58,6 +66,8 @@ class BookingServiceTest {
     BookingDto rejectedBookingDto;
     Booking rejectedBooking;
     NewBookingRequestDto bookingRequestDto;
+    Boolean approve;
+    User booker;
 
     @BeforeEach
     void setUp() {
@@ -89,7 +99,7 @@ class BookingServiceTest {
                 .build();
 
         bookingDto = BookingDto.builder()
-                .id(1)
+                .id(10)
                 .item(ItemMapper.itemMapToDto(item))
                 .booker(UserMapper.userMapToDto(user))
                 .start(now.plusDays(1))
@@ -104,7 +114,7 @@ class BookingServiceTest {
                 .build();
 
         booking = Booking.builder()
-                .id(bookingDto.getId())
+                .id(2)
                 .item(item)
                 .booker(user)
                 .start(bookingDto.getStart())
@@ -230,6 +240,16 @@ class BookingServiceTest {
         when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
 
         assertThrows(ValidationException.class, () -> bookingService.getBookingById(1000, booking.getId()));
+    }
+
+    @Test
+    void test_approve() {
+        BookingDto approvedBooking = bookingService.approve(booking.getId(), owner.getId(), true);
+
+        assertThat(approvedBooking.getStatus()).isEqualTo(BookingStatus.APPROVED);
+
+        Booking updatedBooking = bookingRepository.findById(booking.getId()).orElseThrow();
+        assertThat(updatedBooking.getStatus()).isEqualTo(BookingStatus.APPROVED);
     }
 
     @Test

@@ -80,8 +80,8 @@ class ItemServiceTest {
         nowPlus10hours = now.plusHours(10);
 
         ownerDto = UserDto.builder()
-                .name("name ownerDto1")
-                .email("ownerDto1@mans.gf")
+                .name("name")
+                .email("name@yandex.ru")
                 .build();
 
         owner = User.builder()
@@ -91,8 +91,8 @@ class ItemServiceTest {
                 .build();
 
         requesterDto = UserDto.builder()
-                .name("name requesterDto101")
-                .email("requesterDto101@mans.gf")
+                .name("name1")
+                .email("name1@yandex.ru")
                 .build();
 
         requester = User.builder()
@@ -102,8 +102,8 @@ class ItemServiceTest {
                 .build();
 
         userDto = UserDto.builder()
-                .name("name userDtoForTest")
-                .email("userDtoForTest@userDtoForTest.zx")
+                .name("name2")
+                .email("name2@yandex.ru")
                 .build();
 
         userForTest = User.builder()
@@ -112,8 +112,8 @@ class ItemServiceTest {
                 .build();
 
         bookerDto = UserDto.builder()
-                .name("booker")
-                .email("booker@wa.dzd")
+                .name("name3")
+                .email("name3@yandex.ru")
                 .build();
 
         booker = User.builder()
@@ -122,14 +122,14 @@ class ItemServiceTest {
                 .build();
 
         itemReq = ItemRequest.builder()
-                .description("description for request 1")
+                .description("desc")
                 .creator(requester)
                 .created(now)
                 .build();
 
         item = Item.builder()
-                .name("name for item 1")
-                .description("description for item 1")
+                .name("name1")
+                .description("desc1")
                 .ownerId(owner.getId())
                 .available(true)
                 .build();
@@ -283,7 +283,7 @@ class ItemServiceTest {
                 .id(0)
                 .author(booker)
                 .created(now)
-                .text("comment")
+                .text("text")
                 .item(item).build();
         CommentDto commentDto1 = CommentMapper.toDto(comment);
         assertEquals(comment.getId(), commentDto1.getId());
@@ -296,8 +296,8 @@ class ItemServiceTest {
     void test_saveComment_thenReturnNotFoundRecordInBD() {
         CommentDto commentDto = CommentDto.builder()
                 .id(1)
-                .text("comment 1")
-                .authorName("name user for test 2")
+                .text("text1")
+                .authorName("name1")
                 .created(now.minusDays(5))
                 .build();
 
@@ -306,26 +306,26 @@ class ItemServiceTest {
 
     @Test
     void test_saveComment_thenReturnComment() {
-        CommentDto inputCommentDto = CommentDto.builder().id(1).text("new comment for test").build();
+        CommentDto inputCommentDto = CommentDto.builder().id(1).text("text").build();
 
         User owner2 = User.builder()
                 .id(2)
-                .name("name for owner")
-                .email("owner2@aadmf.wreew")
+                .name("name10")
+                .email("name10@yandex.ru")
                 .build();
 
         User userForTest2 = User.builder()
                 .id(1)
-                .name("name user for test 2")
-                .email("userForTest2@ahd.ew")
+                .name("name20")
+                .email("name20@yandex.ru")
                 .build();
 
-        Item zaglushka = Item.builder().id(1).name("zaglushka").description("desc item zaglushka")
+        Item it = Item.builder().id(1).name("name").description("description")
                 .ownerId(owner2.getId()).build();
 
         Booking bookingFromBd = Booking.builder()
                 .id(1)
-                .item(zaglushka)
+                .item(it)
                 .booker(userForTest2)
                 .start(now.minusDays(10))
                 .end(now.minusDays(5))
@@ -335,23 +335,23 @@ class ItemServiceTest {
 
         Item itemFromBd = Item.builder()
                 .id(1)
-                .name("name for item")
-                .description("desc for item")
+                .name("name00")
+                .description("desc00")
                 .ownerId(owner2.getId())
                 .available(true)
                 .build();
 
         CommentDto commentDto = CommentDto.builder()
                 .id(1)
-                .text("comment 1")
-                .authorName("name user for test 2")
+                .text("text")
+                .authorName("name20")
                 .created(now.minusDays(5))
                 .build();
 
         Comment outputComment = Comment.builder()
                 .id(1)
                 .author(userForTest2)
-                .text("comment 1")
+                .text("text")
                 .item(itemFromBd)
                 .build();
 
