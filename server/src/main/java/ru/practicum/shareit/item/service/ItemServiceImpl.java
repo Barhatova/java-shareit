@@ -38,7 +38,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemRepository repository;
+    private final ItemRepository itemRepository;
     private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
@@ -53,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
         newItem.setOwnerId(user.getId());
         newItem.setItemRequest(item.getRequestId() != null ?
                 ItemRequestMapper.toItemRequest(itemRequestService.getRequestById(userId, item.getRequestId())) : null);
-        repository.save(newItem);
+        itemRepository.save(newItem);
 
         return ItemMapper.itemMapToDto(newItem);
     }
@@ -61,13 +61,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(Integer itemId, Integer userId, UpdateItemRequestDto request) {
         log.debug("updateItem({}, {}, {})",itemId, userId, request);
-        Item updatedItem = repository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Инструмент не найден"));
-        if (updatedItem.getOwnerId().equals(userId)) {
-            throw new NotFoundException("У пользователя нет такого инcтрумента");
+        Item updatedItem = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("У пользователя нет вещи"));
+        if (!Objects.equals(updatedItem.getOwnerId(), userId)) {
+            throw new NotFoundException("У пользователя нет вещи");
         }
         ItemMapper.updateItemFields(updatedItem, request);
-        return ItemMapper.itemMapToDto(repository.findById(itemId).get());
+        return ItemMapper.itemMapToDto(itemRepository.findById(itemId).get());
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         }
-        return repository.searchAvailableItems(text).stream()
+        return itemRepository.searchAvailableItems(text).stream()
                 .map(ItemMapper::itemMapToDto)
                 .filter(itemDTO -> itemDTO.getAvailable().equals(true))
                 .toList();
@@ -85,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item getItemById(Integer itemId) {
         log.debug("getItemById({})", itemId);
-        return repository.findById(itemId)
+        return itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Инструмента id = " + itemId + "не существует"));
     }
 
@@ -94,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
         log.debug("getAllItemsUser({})", userId);
         userService.getUserById(userId);
 
-        List<ItemDto> item = repository.getAllByOwnerId(userId).stream()
+        List<ItemDto> item = itemRepository.getAllByOwnerId(userId).stream()
                 .map(ItemMapper::itemMapToDto)
                 .toList();
 
@@ -108,14 +108,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Integer getOwnerId(Integer itemId) {
-        return repository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException(String.format("Item with ID = %d not found.", itemId)))
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException(String.format("Инструмент не существует", itemId)))
                 .getOwnerId();
     }
 
     @Override
     public ItemDto getById(Integer itemId, Integer userId) {
-        Item item = repository.findById(itemId)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Инструмента id = " + itemId + "не существует"));
         ItemDto result = ItemMapper.itemMapToDto(item);
         if (Objects.equals(item.getOwnerId(), userId)) {
