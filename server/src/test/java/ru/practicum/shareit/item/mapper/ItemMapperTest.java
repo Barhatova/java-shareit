@@ -5,7 +5,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.ShortItemBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 
