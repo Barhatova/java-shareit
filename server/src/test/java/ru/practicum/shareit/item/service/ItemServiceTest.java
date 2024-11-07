@@ -46,14 +46,16 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class ItemServiceTest {
+    private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemRequestService itemRequestService;
-    private final BookingRepository bookingRepository;
     private final ItemService itemService;
     private final UserService userService;
     private final EntityManager em;
+
     ItemRequest itemReq;
     UserDto ownerDto;
+    User user1;
     User owner;
     UserDto requesterDto;
     User requester;
@@ -79,9 +81,16 @@ class ItemServiceTest {
         nowPlus10min = now.plusMinutes(10);
         nowPlus10hours = now.plusHours(10);
 
+        user1 = User.builder()
+                .id(null)
+                .name("name1")
+                .email("name1@yandex.ru")
+                .build();
+
         ownerDto = UserDto.builder()
+                .id(20)
                 .name("name ownerDto1")
-                .email("ownerDto1@mans.gf")
+                .email("ownerDto1@yandex.ru")
                 .build();
 
         owner = User.builder()
@@ -92,7 +101,7 @@ class ItemServiceTest {
 
         requesterDto = UserDto.builder()
                 .name("name requesterDto101")
-                .email("requesterDto101@mans.gf")
+                .email("req@yandex.ru")
                 .build();
 
         requester = User.builder()
@@ -102,8 +111,8 @@ class ItemServiceTest {
                 .build();
 
         userDto = UserDto.builder()
-                .name("name userDtoForTest")
-                .email("userDtoForTest@userDtoForTest.zx")
+                .name("userDtoForTest")
+                .email("userDtoForTest@yandex.ru")
                 .build();
 
         userForTest = User.builder()
@@ -113,7 +122,7 @@ class ItemServiceTest {
 
         bookerDto = UserDto.builder()
                 .name("booker")
-                .email("booker@wa.dzd")
+                .email("booker@yandex.ru")
                 .build();
 
         booker = User.builder()
@@ -122,14 +131,15 @@ class ItemServiceTest {
                 .build();
 
         itemReq = ItemRequest.builder()
-                .description("description for request 1")
+                .description("description 1")
                 .creator(requester)
                 .created(now)
                 .build();
 
         item = Item.builder()
-                .name("name for item 1")
-                .description("description for item 1")
+                .id(10)
+                .name("name item 1")
+                .description("description item 1")
                 .ownerId(owner.getId())
                 .available(true)
                 .build();
@@ -158,7 +168,6 @@ class ItemServiceTest {
                 .text("comment 1")
                 .authorName(userForTest.getName())
                 .build();
-
     }
 
     @AfterEach
@@ -167,7 +176,7 @@ class ItemServiceTest {
 
     @Test
     void test_createItem_returnSavedItemDto() {
-        User savedOwnerDto1 = userService.createUser(owner);
+        User savedOwnerDto1 = userService.createUser(user1);
 
         query = em.createQuery("Select i from Item i", Item.class);
         List<Item> beforeSave = query.getResultList();
@@ -198,7 +207,7 @@ class ItemServiceTest {
 
     @Test
     void test_getItemsByUserId_returnItemDtoList() {
-        User savedOwnerDto1 = userService.createUser(owner);
+        User savedOwnerDto1 = userService.createUser(user1);
         ItemDto savedItemDto = itemService.createItem(savedOwnerDto1.getId(), itemDto);
         Collection<ItemDto> collection = itemService.getAllItemsUser(savedOwnerDto1.getId());
         List<ItemDto> itemDtos = collection.stream().toList();
@@ -217,19 +226,32 @@ class ItemServiceTest {
     }
 
     @Test
+    void test_getOwnerById() {
+        User savedOwnerDto1 = userService.createUser(user1);
+        ItemDto savedItemDto = itemService.createItem(savedOwnerDto1.getId(), itemDto);
+
+        itemService.getOwnerId(savedOwnerDto1.getId());
+
+        assertEquals(savedItemDto.getId(), user1.getId());
+
+        assertThrows(NotFoundException.class,
+                () -> itemService.getOwnerId(10));
+    }
+
+    @Test
     void test_updateInStorage_returnItemFromDb() {
-        User savedOwnerDto1 = userService.createUser(owner);
-        ItemDto savedItemDtoBeforeUpd = itemService.createItem(savedOwnerDto1.getId(), itemDto);
+        User savedOwnerDto1 = userService.createUser(user1);
+        ItemDto savedItemDtoBeforeUpd = itemService.createItem(savedOwnerDto1.getId(), this.itemDto);
 
         Collection<ItemDto> collection = itemService.getAllItemsUser(savedOwnerDto1.getId());
-        List<ItemDto> itemDtos = collection.stream().toList();
+        List<ItemDto> itemDto = collection.stream().toList();
 
-        assertEquals(1, itemDtos.size());
-        assertEquals(savedItemDtoBeforeUpd.getId(), itemDtos.get(0).getId());
-        assertEquals(savedItemDtoBeforeUpd.getName(), itemDtos.get(0).getName());
-        assertEquals(savedItemDtoBeforeUpd.getDescription(), itemDtos.get(0).getDescription());
-        assertEquals(savedItemDtoBeforeUpd.getRequestId(), itemDtos.get(0).getRequestId());
-        assertEquals(savedItemDtoBeforeUpd.getAvailable(), itemDtos.get(0).getAvailable());
+        assertEquals(1, itemDto.size());
+        assertEquals(savedItemDtoBeforeUpd.getId(), itemDto.get(0).getId());
+        assertEquals(savedItemDtoBeforeUpd.getName(), itemDto.get(0).getName());
+        assertEquals(savedItemDtoBeforeUpd.getDescription(), itemDto.get(0).getDescription());
+        assertEquals(savedItemDtoBeforeUpd.getRequestId(), itemDto.get(0).getRequestId());
+        assertEquals(savedItemDtoBeforeUpd.getAvailable(), itemDto.get(0).getAvailable());
 
         UpdateItemRequestDto updatedItem = UpdateItemRequestDto.builder()
                 .name("new name")
@@ -237,8 +259,8 @@ class ItemServiceTest {
                 .available(true)
                 .build();
 
-        ItemDto savedUpdItem =
-                itemService.updateItem(savedItemDtoBeforeUpd.getId(), savedOwnerDto1.getId(), updatedItem);
+        ItemDto savedUpdItem = itemService.updateItem(savedItemDtoBeforeUpd.getId(), savedOwnerDto1.getId(),
+                updatedItem);
 
         assertNotEquals(savedItemDtoBeforeUpd.getName(), savedUpdItem.getName());
         assertNotEquals(savedItemDtoBeforeUpd.getDescription(), savedUpdItem.getDescription());
@@ -248,7 +270,7 @@ class ItemServiceTest {
 
     @Test
     void test_getItemById_returnItemFromDb() {
-        User savedOwnerDto1 = userService.createUser(owner);
+        User savedOwnerDto1 = userService.createUser(user1);
         ItemDto savedItemDtoBeforeUpd = itemService.createItem(savedOwnerDto1.getId(), itemDto);
         Item itemDtoFromBd = itemService.getItemById(savedItemDtoBeforeUpd.getId());
 
@@ -260,12 +282,15 @@ class ItemServiceTest {
     }
 
     @Test
-    void test_SearchItemsByText() {
-        User savedOwnerDto1 = userService.createUser(owner);
+    void test_searchItemsByText() {
+        User savedOwnerDto1 = userService.createUser(user1);
         ItemDto savedItemDto01 = itemService.createItem(savedOwnerDto1.getId(), itemDto);
 
         User savedRequester = userService.createUser(requester);
-        ItemDto itemDto02 = itemDto.toBuilder().name("new item").description("new description").build();
+        ItemDto itemDto02 = itemDto.toBuilder()
+                .name("new item")
+                .description("new description")
+                .build();
 
         ItemDto savedItemDto02 = itemService.createItem(savedOwnerDto1.getId(), itemDto02);
 
@@ -293,11 +318,24 @@ class ItemServiceTest {
     }
 
     @Test
+    void test_commentTextIsNull() {
+        Comment comment = Comment.builder()
+                .id(0)
+                .author(booker)
+                .created(now)
+                .text(null)
+                .item(item).build();
+
+        itemService.getByText("text");
+        assertThrows(NotFoundException.class, () -> itemService.addComment(1000, 1, commentDto));
+    }
+
+    @Test
     void test_saveComment_thenReturnNotFoundRecordInBD() {
         CommentDto commentDto = CommentDto.builder()
                 .id(1)
                 .text("comment 1")
-                .authorName("name user for test 2")
+                .authorName("nametest 2")
                 .created(now.minusDays(5))
                 .build();
 
@@ -306,26 +344,32 @@ class ItemServiceTest {
 
     @Test
     void test_saveComment_thenReturnComment() {
-        CommentDto inputCommentDto = CommentDto.builder().id(1).text("new comment for test").build();
+        CommentDto inputCommentDto = CommentDto.builder()
+                .id(1)
+                .text("new comment for test")
+                .build();
 
         User owner2 = User.builder()
                 .id(2)
                 .name("name for owner")
-                .email("owner2@aadmf.wreew")
+                .email("owner2@yandex.ru")
                 .build();
 
         User userForTest2 = User.builder()
                 .id(1)
                 .name("name user for test 2")
-                .email("userForTest2@ahd.ew")
+                .email("userForTest2@yandex.ru")
                 .build();
 
-        Item zaglushka = Item.builder().id(1).name("zaglushka").description("desc item zaglushka")
-                .ownerId(owner2.getId()).build();
+        Item book = Item.builder().id(1)
+                .name("book")
+                .description("desc item book")
+                .ownerId(owner2.getId())
+                .build();
 
         Booking bookingFromBd = Booking.builder()
                 .id(1)
-                .item(zaglushka)
+                .item(book)
                 .booker(userForTest2)
                 .start(now.minusDays(10))
                 .end(now.minusDays(5))
@@ -361,15 +405,14 @@ class ItemServiceTest {
         BookingRepository bookingRepository2 = mock(BookingRepository.class);
         ItemRequestService itemRequestService = mock(ItemRequestService.class);
 
-        ItemService itemService2 = new ItemServiceImpl(itemRepository, userService1, bookingRepository2, commentRepository2, itemRequestService);
+        ItemService itemService2 = new ItemServiceImpl(itemRepository, userService1, bookingRepository2,
+                commentRepository2, itemRequestService);
 
-        when(userService1.getUserById(anyInt()))
-                .thenReturn(userForTest2);
-        when(itemRepository.findById(anyInt()))
-                .thenReturn(Optional.of(itemFromBd));
-        when(commentRepository2.save(any()))
-                .thenReturn(outputComment);
-        when(bookingRepository2.getByItemIdAndBookerIdAndStatusIsAndEndIsBefore(any(), any(), any(), any())).thenReturn(list);
+        when(userService1.getUserById(anyInt())).thenReturn(userForTest2);
+        when(itemRepository.findById(anyInt())).thenReturn(Optional.of(itemFromBd));
+        when(commentRepository2.save(any())).thenReturn(outputComment);
+        when(bookingRepository2.getByItemIdAndBookerIdAndStatusIsAndEndIsBefore(any(), any(), any(),
+                any())).thenReturn(list);
 
         CommentDto outputCommentDto =
                 itemService2.addComment(itemFromBd.getId(), userForTest2.getId(), inputCommentDto);
@@ -378,5 +421,41 @@ class ItemServiceTest {
         assertEquals(commentDto.getAuthorName(), outputCommentDto.getAuthorName());
         assertEquals(commentDto.getId(), outputCommentDto.getId());
         assertNotEquals(commentDto.getCreated(), outputCommentDto.getCreated());
+    }
+
+    @Test
+    void test_updateIBooking() {
+        User savedOwnerDto1 = userService.createUser(user1);
+        ItemDto savedItemDtoBeforeUpd = itemService.createItem(savedOwnerDto1.getId(), itemDto);
+
+        Collection<ItemDto> collection = itemService.getAllItemsUser(savedOwnerDto1.getId());
+        List<ItemDto> itemDtos = collection.stream().toList();
+
+        assertEquals(1, itemDtos.size());
+        assertEquals(savedItemDtoBeforeUpd.getId(), itemDtos.get(0).getId());
+        assertEquals(savedItemDtoBeforeUpd.getName(), itemDtos.get(0).getName());
+        assertEquals(savedItemDtoBeforeUpd.getDescription(), itemDtos.get(0).getDescription());
+        assertEquals(savedItemDtoBeforeUpd.getRequestId(), itemDtos.get(0).getRequestId());
+        assertEquals(savedItemDtoBeforeUpd.getAvailable(), itemDtos.get(0).getAvailable());
+        assertEquals(savedItemDtoBeforeUpd.getLastBooking(), itemDtos.get(0).getLastBooking());
+        assertEquals(savedItemDtoBeforeUpd.getNextBooking(), itemDtos.get(0).getNextBooking());
+
+        UpdateItemRequestDto updatedItem = UpdateItemRequestDto.builder()
+                .name("new name")
+                .description("new description")
+                .available(true)
+                .lastBooking(null)
+                .nextBooking(null)
+                .build();
+
+        ItemDto savedUpdItem = itemService.updateItem(savedItemDtoBeforeUpd.getId(), savedOwnerDto1.getId(),
+                updatedItem);
+
+        assertNotEquals(savedItemDtoBeforeUpd.getName(), savedUpdItem.getName());
+        assertNotEquals(savedItemDtoBeforeUpd.getDescription(), savedUpdItem.getDescription());
+        assertEquals(savedItemDtoBeforeUpd.getId(), savedUpdItem.getId());
+        assertEquals(savedItemDtoBeforeUpd.getAvailable(), savedUpdItem.getAvailable());
+        assertEquals(savedItemDtoBeforeUpd.getLastBooking(), savedUpdItem.getLastBooking());
+        assertEquals(savedItemDtoBeforeUpd.getNextBooking(), savedUpdItem.getNextBooking());
     }
 }

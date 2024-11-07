@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +10,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.CommentDto;
-
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.UpdateItemRequestDto;
+import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,6 +40,11 @@ class ItemServiceImplTest {
     ItemRepository itemRepository;
     CommentRepository commentRepository;
     LocalDateTime now = LocalDateTime.now();
+    UserService userService;
+    ItemDto itemDto;
+    UpdateItemRequestDto updateItemRequestDto;
+    Item item;
+    User user;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +54,10 @@ class ItemServiceImplTest {
 
     @Test
     void test_getItemWithBookingAndComment() {
-        CommentDto inputCommentDto = CommentDto.builder().id(1).text("new comment for test").build();
+        CommentDto inputCommentDto = CommentDto.builder()
+                .id(1)
+                .text("new comment for test")
+                .build();
 
         User owner2 = User.builder()
                 .id(2)
@@ -76,7 +86,7 @@ class ItemServiceImplTest {
                 .end(now.minusDays(5))
                 .build();
 
-        Item itemFromBd = Item.builder()
+        Item item = Item.builder()
                 .id(1)
                 .name("name")
                 .description("desc")
@@ -95,7 +105,7 @@ class ItemServiceImplTest {
                 .id(1)
                 .author(userForTest2)
                 .text("text2")
-                .item(itemFromBd)
+                .item(item)
                 .build();
 
         UserRepository userRepositoryJpa2 = mock(UserRepository.class);
@@ -103,7 +113,23 @@ class ItemServiceImplTest {
         CommentRepository commentRepository2 = mock(CommentRepository.class);
 
         when(userRepositoryJpa2.findById(any())).thenReturn(Optional.of(userForTest2));
-        when(itemRepositoryJpa2.findById(any())).thenReturn(Optional.of(itemFromBd));
+        when(itemRepositoryJpa2.findById(any())).thenReturn(Optional.of(item));
         when(commentRepository2.save(any())).thenReturn(outputComment);
+    }
+
+    @Test
+    void test_getItemById() {
+        Integer itemId = 3;
+
+        Assertions.assertThrows(RuntimeException.class,
+                        () -> itemService.getItemById(itemId));
+    }
+
+    @Test
+    void test_getOwnerById() {
+        Integer ownerId = 3;
+
+        Assertions.assertThrows(RuntimeException.class,
+                () -> itemService.getOwnerId(ownerId));
     }
 }

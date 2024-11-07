@@ -3,23 +3,21 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
-
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.mapper.CommentMapper;
-import ru.practicum.shareit.item.model.Comment;
-import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.UpdateItemRequestDto;
+import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -27,12 +25,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -50,8 +43,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.getUserById(userId);
         Item newItem = ItemMapper.mapToItem(item);
         newItem.setOwnerId(user.getId());
-        newItem.setItemRequest(item.getRequestId() != null ?
-                ItemRequestMapper.toItemRequest(itemRequestService.getRequestById(userId, item.getRequestId())) : null);
+        newItem.setItemRequest(item.getRequestId() != null ? ItemRequestMapper.toItemRequest(itemRequestService.getRequestById(userId, item.getRequestId())) : null);
         itemRepository.save(newItem);
         return ItemMapper.itemMapToDto(newItem);
     }
@@ -81,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item getItemById(Integer itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("\"Вещи с id {}" + itemId + "не существует\""));
+                .orElseThrow(() -> new NotFoundException("Вещи с id {}" + itemId + "не существует"));
     }
 
     @Override

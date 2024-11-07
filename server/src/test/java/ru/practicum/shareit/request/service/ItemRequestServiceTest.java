@@ -191,8 +191,7 @@ class ItemRequestServiceTest {
         Integer requestId = 1001;
         NotFoundException ex = assertThrows(NotFoundException.class,
                 () -> itemRequestService.getRequestById(savedRequesterDto.getId(), requestId));
-        assertEquals("Запрос на аренду с id = 1001 не найден",
-                ex.getMessage());
+        assertEquals("Запрос на аренду с id = 1001 не найден", ex.getMessage());
     }
 
     @Test

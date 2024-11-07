@@ -62,4 +62,12 @@ public class ExceptionMessageTest {
         assertNotNull(exception);
         assertEquals(expectedMessage, exception.getMessage());
     }
+
+    @Test
+    void test_BadRequestExceptionMessage() {
+        String expectedMessage = "Плохой запрос";
+        BadRequestException exception = new BadRequestException(expectedMessage);
+        assertNotNull(exception);
+        assertEquals(expectedMessage, exception.getMessage());
+    }
 }

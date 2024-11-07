@@ -71,4 +71,23 @@ public class BookingMapperTest {
         assertEquals(shortItemBookingDto.getStart(), result.getStart());
         assertEquals(shortItemBookingDto.getEnd(), result.getEnd());
     }
+
+    @Test
+    void test_toItemBookingDto_ShortItemBookingDto() {
+        Booking booking = new Booking();
+        User user = new User();
+        user.setId(1);
+        user.setName("name");
+        user.setEmail("name@yandex.ru");
+        ShortItemBookingDto result = ShortItemBookingDto.builder()
+                .id(booking.getId())
+                .start(booking.getStart())
+                .end(booking.getEnd())
+                .build();
+
+        assertNotNull(result);
+        assertEquals(booking.getId(), result.getId());
+        assertEquals(booking.getStart(), result.getStart());
+        assertEquals(booking.getEnd(), result.getEnd());
+    }
 }

@@ -80,7 +80,6 @@ public class BookingControllerTest {
                 .ownerId(owner.getId())
                 .available(true)
                 .build();
-
     }
 
     @SneakyThrows
@@ -132,7 +131,6 @@ public class BookingControllerTest {
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
-
         assertEquals(mapper.writeValueAsString(bookingDto1ForResponse), result);
     }
 

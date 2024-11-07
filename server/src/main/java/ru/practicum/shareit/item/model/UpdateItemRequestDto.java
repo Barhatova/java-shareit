@@ -1,17 +1,20 @@
 package ru.practicum.shareit.item.model;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.model.Booking;
 
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateItemRequestDto {
     String name;
     String description;
     Boolean available;
+    Booking lastBooking;
+    Booking nextBooking;
 
     public boolean hasItemName() {
         return ! (name == null || name.isBlank());
