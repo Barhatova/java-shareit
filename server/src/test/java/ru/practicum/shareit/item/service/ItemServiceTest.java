@@ -226,19 +226,6 @@ class ItemServiceTest {
     }
 
     @Test
-    void test_getOwnerById() {
-        User savedOwnerDto1 = userService.createUser(user1);
-        ItemDto savedItemDto = itemService.createItem(savedOwnerDto1.getId(), itemDto);
-
-        itemService.getOwnerId(savedOwnerDto1.getId());
-
-        assertEquals(savedItemDto.getId(), user1.getId());
-
-        assertThrows(NotFoundException.class,
-                () -> itemService.getOwnerId(10));
-    }
-
-    @Test
     void test_updateInStorage_returnItemFromDb() {
         User savedOwnerDto1 = userService.createUser(user1);
         ItemDto savedItemDtoBeforeUpd = itemService.createItem(savedOwnerDto1.getId(), this.itemDto);
@@ -421,6 +408,19 @@ class ItemServiceTest {
         assertEquals(commentDto.getAuthorName(), outputCommentDto.getAuthorName());
         assertEquals(commentDto.getId(), outputCommentDto.getId());
         assertNotEquals(commentDto.getCreated(), outputCommentDto.getCreated());
+    }
+
+    @Test
+    void test_getOwnerById() {
+        User savedOwnerDto1 = userService.createUser(user1);
+        ItemDto savedItemDto = itemService.createItem(savedOwnerDto1.getId(), itemDto);
+
+        itemService.getOwnerId(savedOwnerDto1.getId());
+
+        assertEquals(savedItemDto.getId(), user1.getId());
+
+        assertThrows(NotFoundException.class,
+                () -> itemService.getOwnerId(10));
     }
 
     @Test
