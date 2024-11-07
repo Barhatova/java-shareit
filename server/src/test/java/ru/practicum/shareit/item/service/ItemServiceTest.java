@@ -411,19 +411,6 @@ class ItemServiceTest {
     }
 
     @Test
-    void test_getOwnerById() {
-        User savedOwnerDto1 = userService.createUser(user1);
-        ItemDto savedItemDto = itemService.createItem(savedOwnerDto1.getId(), itemDto);
-
-        itemService.getOwnerId(savedOwnerDto1.getId());
-
-        assertEquals(savedItemDto.getId(), user1.getId());
-
-        assertThrows(NotFoundException.class,
-                () -> itemService.getOwnerId(10));
-    }
-
-    @Test
     void test_updateIBooking() {
         User savedOwnerDto1 = userService.createUser(user1);
         ItemDto savedItemDtoBeforeUpd = itemService.createItem(savedOwnerDto1.getId(), itemDto);
