@@ -38,7 +38,6 @@
 * GET /bookings/{bookingId} - получение данных о бронировании
 * GET /bookings/ - получение бронирований по фильтрам state, from, size
 * GET /bookings/owner - получение бронирований пользователя по фильтрам state, from, sizeShareIt - микросервисное приложение для аренды вещей
-* Java, Spring Boot, Spring JPA, PostgreSQL, REST API, Docker, Mockito, JUnit, MapStruct, Lombok
 
 ## Стек:
 
